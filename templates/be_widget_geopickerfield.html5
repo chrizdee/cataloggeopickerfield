@@ -1,0 +1,43 @@
+
+<h3><?php echo $this->generateLabel(); echo $this->xlabel; ?></h3>
+<?php echo $this->generateWithError(true); ?>
+<input id="geocomplete" type="text" placeholder="<?php echo $GLOBALS['TL_LANG']['cataloggeopickerfield']['Address']; ?>" value="" class="tl_text" style="width: 30%; margin-left: 20px;" />
+<input id="find" type="button" value="<?php echo $GLOBALS['TL_LANG']['cataloggeopickerfield']['Find']; ?>" class="tl_submit" />
+<div class="map_canvas" style="width: 100%; height: 400px; margin: 10px 0; border: 1px solid #ccc;"></div>
+
+<script src="http://maps.googleapis.com/maps/api/js?sensor=false&amp;libraries=places"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+<script src="system/modules/cataloggeopickerfield/html/jquery.geocomplete.min.js"></script>
+
+<script>
+  $j = jQuery.noConflict(); 
+  $j(function(){
+
+    <?php if(!empty($this->varValue)): ?>
+      var defLocation = new window.google.maps.LatLng(<?php echo specialchars($this->varValue); ?>);
+    <?php else: ?>
+      var defLocation = new window.google.maps.LatLng(49.45203,11.076749999999947);
+    <?php endif; ?>
+
+  	
+    $j("#geocomplete").geocomplete({
+      map: ".map_canvas",
+      details: "form ",
+      location: defLocation,
+      markerOptions: {
+        draggable: true,
+        position: defLocation
+      }
+    });
+    
+    $j("#geocomplete").bind("geocode:dragged", function(event, latLng){
+      $j("input.geopicker_coords").val(latLng.lat() + "," + latLng.lng());
+    });
+    
+    
+    $j("#find").click(function(){
+      $j("#geocomplete").trigger("geocode");
+    }).click();
+
+  });
+</script>
